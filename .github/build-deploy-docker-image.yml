@@ -1,0 +1,32 @@
+name: Docker Image CI & CD
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Compute image name & tag
+        run: |
+          TAG=$DOCKER_REGISTRY/$GITHUB_REPOSITORY/$IMAGE_NAME:${GITHUB_REF#refs/heads/}
+          echo "::set-env name=TAG::$TAG"
+
+      - name: Build the Docker image
+        run: docker build -t $TAG .
+
+      - name: Push the Docker image
+        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/staging'
+        run: |
+          echo ${{ secrets.GITHUB_TOKEN }} | docker login $DOCKER_REGISTRY -u null --password-stdin 
+          docker push $TAG
+
+    env:
+      DOCKER_REGISTRY: docker.pkg.github.com
+      IMAGE_NAME: frustrated-physicists-backend
+      # IMAGE_TAG: ${{ substring(github.ref, 11) }}
