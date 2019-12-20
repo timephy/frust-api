@@ -4,9 +4,11 @@
 
 ### Routes
 
-`/api/socket.io` socket.io endpoint
+`/api` (returns: `{"version": String}`)
 
 `/api/history` click history (returns `[{"time": Int, "name": String, "comment": String?}]`)
+
+`/api/socket.io` socket.io endpoint
 
 ### Socket.io Events
 
