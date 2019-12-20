@@ -10,7 +10,7 @@
 
 ### Socket.io Events
 
-"users" -  (emitted every time usercount changes)
+"users" (emitted every time usercount changes)
 ```typescript
 {
     "count": Int
