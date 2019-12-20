@@ -1,161 +1,73 @@
-# import gevent.pywsgi
-from werkzeug.wrappers import Request, Response
-from werkzeug.routing import Map, Rule
-from werkzeug.wsgi import responder
-from werkzeug.exceptions import NotFound, HTTPException
-import wsgiref.simple_server
+import asyncio
+from aiohttp import web
+import socketio
 import json
-import static_content
-import functools
-from geventwebsocket import WebSocketApplication
+
+sio = socketio.AsyncServer(async_mode="aiohttp")
+
+app = web.Application()
+sio.attach(app)
+
+# A counter for the connected socket.io client
+client_counter = 0
 
 
-PORT = 80
-
-# werkzeug object
-map = Map([])
-# '/api' route return list
-api_paths = []
+def pretty_json_response(data):
+    return web.Response(text=json.dumps(data, indent=2))
 
 
-class HTTP_Method:
-    GET = ("GET",)
-    POST = ("POST",)
+# HTTP Routes
+async def index(request):
+    return pretty_json_response({
+        "version": "0.1"
+    })
 
 
-def KeyErrorToNotFound(func):
-    @functools.wraps(func)
-    def wrapper(*args, **kwargs):
-        try:
-            return func(*args, **kwargs)
-        except KeyError:
-            raise NotFound
-    return wrapper
+async def history(request):
+    return pretty_json_response([
+        {"time": 1234567, "name": "Name here", "comment": "Comment here"}
+    ] * 5)
 
 
-def route(url_path, http_methods=HTTP_Method.GET, desc=None):
-    """
-    Decorator for a function that with signature (req, values).
+# set routes of app
+app.add_routes([
+    web.get("/api", index),
+    web.get("/api/history", history)
+])
 
-    Registers function to be called when a HTTP request for 'url_path' is
-    handled. The return value is sent to the client.
-    """
-    if not isinstance(url_path, str):
-        raise Exception("'url_path' has to be of type 'str'.")
-
-    def decorator(func):
-        # register function to url-path
-        print(url_path, "->", func.__name__,
-              f"""[{", ".join(http_methods)}]""")
-        r = Rule(url_path, endpoint=func, methods=http_methods)
-        map.add(r)
-        map.update()
-        path = {
-            "path": url_path,
-            "methods": list(http_methods)
-        }
-        if desc:
-            path["description"] = desc
-        api_paths.append(path)
-
-        # return function, no wrapper
-        return func
-    return decorator
+# Socket.io Events
 
 
-@responder
-def handle(environ, start_response):
-    try:
-        # Wrapper objects
-        req = Request(environ)
+@sio.event
+async def clicked(sid, data):
+    print(f"clicked({sid}, {data})")
 
-        # Match URL to endpoint (function)
-        adapter = map.bind_to_environ(environ)
-        endpoint, values = adapter.match()  # values not used
-
-        return endpoint(req, values)
-    except NotFound:
-        return Response(static_content.html_files["404.html"],
-                        mimetype="text/html",
-                        status=404)
-    except HTTPException as e:
-        return e
-    except Exception as e:
-        # Normal exceptions should never happen, raise to print
-        raise e
+    await sio.emit("clicked", data)
 
 
-# Open websockets to send updates to
-sockets = []
+@sio.event
+async def connect(sid, environ):
+    print(f"connect({sid})")  # ", {environ})")
+
+    global client_counter
+    client_counter += 1
+    await sio.emit("stats", {"total": 90, "day": 50, "hour": 10}, room=sid)
+    await sio.emit("users", {"count": client_counter})
 
 
-class ClickApplication(WebSocketApplication):
-    def on_open(self):
-        sockets.append(self)
+@sio.event
+async def disconnect(sid):
+    print(f"disconnect({sid})")
 
-    def on_message(self, message):
-        for socket in sockets:
-            socket.ws.send(message)
-
-    def on_close(self, reason):
-        sockets.remove(self)
+    global client_counter
+    client_counter -= 1
+    await sio.emit("users", {"count": client_counter})
 
 
-# API
+@sio.event
+async def connect_error():
+    print("The connection failed!")
 
 
-@route("/api/status")
-def status(req, values):
-    pass
-
-
-@route("/api/history")
-def history(req, values):
-    pass
-
-
-@route("/ws")
-def ws(req, values):
-    pass
-
-
-# Static content
-
-
-@route("/")
-def root(req, values):
-    return html(req, {"file": "index.html"})
-
-
-@route("/<file>")
-@KeyErrorToNotFound
-def html(req, values):
-    return Response(static_content.html_files[values["file"]],
-                    mimetype="text/html")
-
-
-@route("/scripts/<file>")
-@KeyErrorToNotFound
-def js(req, values):
-    return Response(static_content.js_files[values["file"]],
-                    mimetype="text/javascript")
-
-
-@route("/styles/<file>")
-@KeyErrorToNotFound
-def css(req, values):
-    return Response(static_content.css_files[values["file"]],
-                    mimetype="text/css")
-
-
-@route("/images/<file>")
-@KeyErrorToNotFound
-def img(req, values):
-    return Response(static_content.img_files[values["file"]],
-                    mimetype="image")
-
-
-# Start server
-with wsgiref.simple_server.make_server("", PORT, handle) as httpd:
-    print(f"Serving on port {PORT}...")
-    httpd.serve_forever()
+# Run app
+asyncio.run(web.run_app(app, port=80))
