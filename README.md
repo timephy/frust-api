@@ -10,7 +10,7 @@
 
 `users` - `{"count": Int}` (gets emitted every time usercount changes)
 
-`stats` - `Stats` (gets emitted once when you connect, and periodically after)
+`stats` - `{"total": Int, "day": Int, "hour": Int}` (gets emitted once when you connect, and periodically after)
 
 `click` - `{"name": String, "comment": String?}` (gets emitted ever time a click is received by the server)
 
