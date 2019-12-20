@@ -8,11 +8,11 @@
 
 ## Socket.io Events
 
-`users` - `{"count": Int}` (gets emitted every time usercount changes)
+`users` - `{"count": Int}` (emitted every time usercount changes)
 
-`stats` - `{"total": Int, "day": Int, "hour": Int}` (gets emitted once when you connect, and periodically after)
+`stats` - `{"total": Int, "day": Int, "hour": Int}` (emitted once when you connect, and periodically after)
 
-`click` - `{"name": String, "comment": String?}` (gets emitted ever time a click is received by the server)
+`click` - `{"name": String, "comment": String?}` (emitted ever time a click is received by the server)
 
 ## JSON Interfaces
 
