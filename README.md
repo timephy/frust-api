@@ -1,38 +1,25 @@
-# frustrated-physicists-backend
+# frustrated-physicists-backend (API)
 
-## Frontend Routes
+## Routes
 
-`/`, `/index.html` main page
+`/api/socket.io` socket.io endpoint
 
-`/history.html` click history
+`/api/history` click history (returns `[Entry]`)
 
+## Socket.io Events
 
-## API Routes
+`users` - `{"count": Int}` (gets emitted every time usercount changes)
 
-`/api/ws` websocket for click posts and updates
+`stats` - `Stats` (gets emitted once when you connect, and periodically after)
 
-`/api/history` click history (`[Entry]`)
+`click` - `{"name": String, "comment": String?}` (gets emitted ever time a click is received by the server)
 
-`/api/status` status (`Status`)
-
-
-## API JSON Interfaces
+## JSON Interfaces
 
 ```typescript
 interface Entry {
     time: Int,
     name: String,
-    message: String?
-}
-
-interface Status {
-    total: Int,
-    day: Int,
-    hour: Int
-}
-
-interface Click {
-    name: String,
-    message: String?
+    comment: String?
 }
 ```
