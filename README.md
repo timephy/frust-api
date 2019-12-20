@@ -1,12 +1,14 @@
-# frustrated-physicists-backend (API)
+# frustrated-physicists-backend
 
-## Routes
+## API
+
+### Routes
 
 `/api/socket.io` socket.io endpoint
 
 `/api/history` click history (returns `[{time: Int, name: String, comment: String?}]`)
 
-## Socket.io Events
+### Socket.io Events
 
 `users` - `{"count": Int}` (emitted every time usercount changes)
 
