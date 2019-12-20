@@ -6,7 +6,7 @@ import json
 sio = socketio.AsyncServer(async_mode="aiohttp")
 
 app = web.Application()
-sio.attach(app)
+sio.attach(app, socketio_path="/api/socket.io")
 
 # A counter for the connected socket.io client
 client_counter = 0
