@@ -1,2 +1,2 @@
-werkzeug
-gevent-websocket
+aiohttp
+python-socketio
