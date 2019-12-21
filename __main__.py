@@ -6,6 +6,8 @@ import json
 import db
 import utils
 
+VERSION = "0.1"
+
 sio = socketio.AsyncServer(async_mode="aiohttp")
 
 app = web.Application()
@@ -22,7 +24,7 @@ def pretty_json_response(data):
 # HTTP Routes
 async def index(request):
     return pretty_json_response({
-        "version": "0.1"
+        "version": VERSION
     })
 
 
@@ -54,7 +56,7 @@ async def connect(sid, environ):
 
     global client_counter
     client_counter += 1
-    await sio.emit("stats", {"total": 90, "day": 50, "hour": 10}, room=sid)
+    await sio.emit("stats", await db.get_stats(), room=sid)
     await sio.emit("users", {"count": client_counter})
 
 
