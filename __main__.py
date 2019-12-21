@@ -3,6 +3,9 @@ from aiohttp import web
 import socketio
 import json
 
+import db
+import utils
+
 sio = socketio.AsyncServer(async_mode="aiohttp")
 
 app = web.Application()
@@ -24,9 +27,7 @@ async def index(request):
 
 
 async def history(request):
-    return pretty_json_response([
-        {"time": 1234567, "name": "Name here", "comment": "Comment here"}
-    ] * 5)
+    return pretty_json_response(await db.get_last_clicks())
 
 
 # set routes of app
@@ -42,7 +43,9 @@ app.add_routes([
 async def clicked(sid, data):
     print(f"clicked({sid}, {data})")
 
-    await sio.emit("clicked", data)
+    utils.assert_click_data(data)
+    click = await db.add_click(data["name"], data["comment"])
+    await sio.emit("clicked", click)
 
 
 @sio.event
