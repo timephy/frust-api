@@ -8,6 +8,7 @@ import utils
 
 VERSION = "0.1"
 
+# Setup web server
 sio = socketio.AsyncServer(async_mode="aiohttp")
 
 app = web.Application()
@@ -18,6 +19,7 @@ client_counter = 0
 
 
 def pretty_json_response(data):
+    """json.dumps with indent of 2"""
     return web.Response(text=json.dumps(data, indent=2))
 
 
