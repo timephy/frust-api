@@ -18,20 +18,18 @@ sio.attach(app, socketio_path="/api/socket.io")
 client_counter = 0
 
 
-def pretty_json_response(data):
+def dumps(data):
     """json.dumps with indent of 2"""
     return web.Response(text=json.dumps(data, indent=2))
 
 
 # HTTP Routes
 async def index(request):
-    return pretty_json_response({
-        "version": VERSION
-    })
+    return dumps({"version": VERSION})
 
 
 async def history(request):
-    return pretty_json_response(await db.get_last_clicks())
+    return dumps(await db.get_last_clicks())
 
 
 # set routes of app
@@ -47,8 +45,8 @@ app.add_routes([
 async def clicked(sid, data):
     print(f"clicked({sid}, {data})")
 
-    utils.assert_click_data(data)
-    click = await db.add_click(data["name"], data["comment"])
+    name, comment = utils.extract_click_data(data)
+    click = await db.add_click(name, comment)
     await sio.emit("clicked", click)
 
 
