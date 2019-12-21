@@ -1,5 +1,13 @@
 # frustrated-physicists-backend
 
+## General
+
+- python3.8
+
+- serves on port 80
+
+- this backend only acts as the API, it does not server static frontend files (any more)
+
 ## API
 
 ### Routes
