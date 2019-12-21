@@ -39,6 +39,7 @@
 "click" (emitted ever time a corresponding click is received by the server)
 ```typescript
 {
+    "time": Int,
     "name": String,
     "comment": String?
 }
