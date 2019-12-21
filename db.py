@@ -3,11 +3,13 @@ import datetime
 
 
 async def add_click(name: str, comment: str):
+    """Stores a click to the database and returns this click object (dict)."""
     click = {"date": 123456789, "name": name, "comment": comment}
     # db.store(click)
     return click
 
 
 async def get_last_clicks(count: int = 1000):
+    """Returns last `count` clicks from the database."""
     # return db.last(count)
     return [{"date": 123456789, "name": "Name", "comment": "Comment"}] * 5
