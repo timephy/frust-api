@@ -2,6 +2,7 @@ import asyncio
 from aiohttp import web
 import socketio
 import json
+import sys
 
 import db
 import utils
@@ -37,6 +38,11 @@ app.add_routes([
     web.get("/api", index),
     web.get("/api/history", history)
 ])
+
+# server frontend for development if "--dev"
+# use /index.html (/ does not work)
+if "--dev" in sys.argv:
+    app.router.add_static("/", "./frontend")
 
 # Socket.io Events
 
