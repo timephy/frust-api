@@ -1,7 +1,6 @@
 import asyncio
 from aiohttp import web
 import socketio
-import json
 import sys
 
 import db
@@ -19,18 +18,13 @@ sio.attach(app, socketio_path="/api/socket.io")
 client_counter = 0
 
 
-def dumps(data):
-    """json.dumps with indent of 2"""
-    return web.Response(text=json.dumps(data, indent=2))
-
-
 # HTTP Routes
 async def index(request):
-    return dumps({"version": VERSION})
+    return utils.dumps({"version": VERSION})
 
 
 async def history(request):
-    return dumps(await db.get_last_clicks())
+    return utils.dumps(await db.get_last_clicks())
 
 
 # set routes of app
