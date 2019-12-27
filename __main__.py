@@ -42,12 +42,12 @@ if "--dev" in sys.argv:
 
 
 @sio.event
-async def clicked(sid, data):
-    print(f"clicked({sid}, {data})")
+async def click(sid, data):
+    print(f"click({sid}, {data})")
 
     name, comment = utils.extract_click_data(data)
     click = await db.add_click(name, comment)
-    await sio.emit("clicked", click)
+    await sio.emit("click", click)
 
 
 @sio.event
