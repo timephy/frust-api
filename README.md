@@ -6,7 +6,7 @@
 
 - serves on port 80
 
-- this backend only acts as the API, it does not server static frontend files (any more)
+- this backend only acts as the API (serves frontend only for development)
 
 ## How to run
 
@@ -22,8 +22,9 @@ python3.8 .
 
 ```bash
 git clone https://github.com/timephy/frustrated-physicists-backend
+git clone https://github.com/timephy/frustrated-physicists-frontend
 cd frustrated-physicists-backend
-git clone https://github.com/timephy/frustrated-physicists-frontend frontend
+ln -s ../frustrated-physicists-frontend frontend
 python3.8 . --dev
 ```
 
