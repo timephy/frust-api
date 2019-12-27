@@ -7,7 +7,8 @@ def extract_click_data(data):
         raise Exception("name must be of type String")
     if "comment" in data and type(data["comment"]) is not str:
         raise Exception("comment is not of type String?")
-    return data["name"], data["comment"]
+    return data["name"], data.get("comment")  # get() defaults to None
+    # return getattr(data, "name"), getattr(data, "comment", None)
 
 
 def dumps(data):
