@@ -8,6 +8,25 @@
 
 - this backend only acts as the API, it does not server static frontend files (any more)
 
+## How to run
+
+### Production
+
+```bash
+git clone https://github.com/timephy/frustrated-physicists-backend
+cd frustrated-physicists-backend
+python3.8 .
+```
+
+### Development
+
+```bash
+git clone https://github.com/timephy/frustrated-physicists-backend
+cd frustrated-physicists-backend
+git clone https://github.com/timephy/frustrated-physicists-frontend frontend
+python3.8 . --dev
+```
+
 ## API
 
 ### Routes
