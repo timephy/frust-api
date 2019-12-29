@@ -27,20 +27,7 @@ async def history(request):
     return utils.dumps(await db.get_last_clicks())
 
 
-# set routes of app
-app.add_routes([
-    web.get("/api", index),
-    web.get("/api/history", history)
-])
-
-# server frontend for development if "--dev"
-# use /index.html (/ does not work)
-if "--dev" in sys.argv:
-    app.router.add_static("/", "./frontend")
-
 # Socket.io Events
-
-
 @sio.event
 async def click(sid, data):
     print(f"click({sid}, {data})")
@@ -73,6 +60,16 @@ async def disconnect(sid):
 async def connect_error():
     print("The connection failed!")
 
+# set routes of app
+app.add_routes([
+    web.get("/api", index),
+    web.get("/api/history", history)
+])
+
+# server frontend for development if "--dev"
+# use /index.html (/ does not work)
+if "--dev" in sys.argv:
+    app.router.add_static("/", "./frontend")
 
 # Run app
 asyncio.run(web.run_app(app, port=80))
