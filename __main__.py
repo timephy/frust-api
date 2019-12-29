@@ -14,6 +14,7 @@ sio = socketio.AsyncServer(async_mode="aiohttp")
 app = web.Application()
 sio.attach(app, socketio_path="/api/socket.io")
 
+
 # A counter for the connected socket.io client
 client_counter = 0
 
@@ -66,7 +67,7 @@ app.add_routes([
     web.get("/api/history", history)
 ])
 
-# server frontend for development if "--dev"
+# serve frontend for development
 # use /index.html (/ does not work)
 if "--dev" in sys.argv:
     app.router.add_static("/", "./frontend")
