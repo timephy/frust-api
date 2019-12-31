@@ -23,8 +23,20 @@ jobs:
       - name: Push the Docker image
         if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/staging'
         run: |
-          echo ${{ secrets.GITHUB_TOKEN }} | docker login $DOCKER_REGISTRY -u null --password-stdin 
+          echo ${{ secrets.GITHUB_TOKEN }} | docker login $DOCKER_REGISTRY -u null --password-stdin
           docker push $TAG
+
+      - name: CD
+        run: |
+          mkdir -p ~/.ssh
+          # "" required, otherwise multiline secret is not treated correctly
+          echo "${{ secrets.id_rsa }}" > ~/.ssh/id_rsa
+          # rsync error if id_rsa is readable by other users
+          chmod 700 ~/.ssh/id_rsa
+          ssh-keyscan $SERVER > ~/.ssh/known_hosts
+          ssh cd@$SERVER ./redeploy_frustrated-physicists-backend.sh
+        env:
+          SERVER: timephy.com
 
     env:
       DOCKER_REGISTRY: docker.pkg.github.com
