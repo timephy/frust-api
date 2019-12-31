@@ -70,6 +70,13 @@ app.add_routes([
 # serve frontend for development
 # use /index.html (/ does not work)
 if "--dev" in sys.argv:
+    print("Developer mode activated (serving static content).")
+    # Logging
+    import logging
+    logging.basicConfig(level=logging.DEBUG)
+    # Redirect / to /index.html
+    app.router.add_get("/", lambda _: web.HTTPFound('/index.html'))
+    # Server static content
     app.router.add_static("/", "./frontend")
 
 # Run app
