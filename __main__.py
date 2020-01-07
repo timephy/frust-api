@@ -30,12 +30,22 @@ async def history(request):
 
 # Socket.io Events
 @sio.event
+@utils.sio_catch_error
 async def click(sid, data):
     print(f"click({sid}, {data})")
 
     name, comment = utils.extract_click_data(data)
     click = await db.add_click(name, comment)
     await sio.emit("click", click)
+
+
+@sio.event
+@utils.sio_catch_error
+async def event(sid, data):
+    print(f"event({sid}, {data})")
+
+    event_id = utils.extract_event_data(data)
+    await sio.emit("event", {"id": event_id})
 
 
 @sio.event
