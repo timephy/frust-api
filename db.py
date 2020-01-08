@@ -4,7 +4,6 @@ import datetime
 
 current_total_clicks = 45000
 current_day_clicks = 43500
-current_hour_clicks = 100
 
 
 async def add_click(name: str, comment: str, style: str):
@@ -17,10 +16,8 @@ async def add_click(name: str, comment: str, style: str):
     }
     global current_total_clicks
     global current_day_clicks
-    global current_hour_clicks
     current_total_clicks += 1
     current_day_clicks += 1
-    current_hour_clicks += 1
     # db.store(click)
     return click
 
@@ -43,16 +40,9 @@ async def get_day_clicks():
     return current_day_clicks
 
 
-async def get_hour_clicks():
-    """Returns the amout of clicks in the last hour."""
-    global current_hour_clicks
-    return current_hour_clicks
-
-
 async def get_stats():
     # TODO: await together
     return {
         "total": await get_total_clicks(),
-        "day": await get_day_clicks(),
-        "hour": await get_hour_clicks()
+        "day": await get_day_clicks()
     }

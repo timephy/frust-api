@@ -53,8 +53,7 @@ python3.8 . --dev
 ```typescript
 {
     "total": Int,
-    "day": Int,
-    "hour": Int
+    "day": Int
 }
 ```
 
