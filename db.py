@@ -7,9 +7,14 @@ current_day_clicks = 41000
 current_hour_clicks = 100
 
 
-async def add_click(name: str, comment: str):
+async def add_click(name: str, comment: str, style: str):
     """Stores a click to the database and returns this click object (dict)."""
-    click = {"date": 123456789, "name": name, "comment": comment}
+    click = {
+        "timestamp": 123456789,
+        "name": name,
+        "comment": comment,
+        "style": style
+    }
     global current_total_clicks
     global current_day_clicks
     global current_hour_clicks

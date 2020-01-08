@@ -34,8 +34,8 @@ async def history(request):
 async def click(sid, data):
     print(f"click({sid}, {data})")
 
-    name, comment = utils.extract_click_data(data)
-    click = await db.add_click(name, comment)
+    name, comment, style = utils.extract_click_data(data)
+    click = await db.add_click(name, comment, style)
     await sio.emit("click", click)
 
 

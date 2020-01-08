@@ -9,8 +9,10 @@ def extract_click_data(data):
         raise Exception("name must be of type String")
     if "comment" in data and type(data["comment"]) is not str:
         raise Exception("comment is not of type String?")
-    return data["name"], data.get("comment")  # get() defaults to None
-    # return getattr(data, "name"), getattr(data, "comment", None)
+    if "style" in data and type(data["style"]) is not str:
+        raise Exception("style is not of type String?")
+    # get() defaults to None
+    return data["name"], data.get("comment"), data.get("style")
 
 
 def extract_event_data(data):
