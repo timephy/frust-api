@@ -44,8 +44,8 @@ async def click(sid, data):
 async def event(sid, data):
     print(f"event({sid}, {data})")
 
-    event_id = utils.extract_event_data(data)
-    await sio.emit("event", {"id": event_id})
+    name, event_id = utils.extract_event_data(data)
+    await sio.emit("event", {"name": name, "id": event_id})
 
 
 @sio.event

@@ -16,9 +16,11 @@ def extract_click_data(data):
 
 
 def extract_event_data(data):
+    if "name" not in data or type(data["name"]) is not str:
+        raise Exception("name must be of type String")
     if "id" not in data or type(data["id"]) is not str:
         raise Exception("id must be of type String")
-    return data["id"]
+    return data["name"], data["id"]
 
 
 def dumps(data):
