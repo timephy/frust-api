@@ -2,8 +2,8 @@ import sqlite3
 import datetime
 
 
-current_total_clicks = 45000
-current_day_clicks = 43500
+current_total_clicks = 56000
+current_day_clicks = 1500
 
 
 async def add_click(name: str, comment: str, style: str):
