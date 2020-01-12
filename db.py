@@ -2,7 +2,7 @@ import sqlite3
 import datetime
 
 
-current_total_clicks = 56000
+current_total_clicks = 75500
 current_day_clicks = 1500
 
 
