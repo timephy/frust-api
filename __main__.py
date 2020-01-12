@@ -102,7 +102,8 @@ async def disconnect(sid):
     del client_session_clicks[sid]
 
     global client_names
-    del client_names[sid]
+    if sid in client_names:  # if user did send name
+        del client_names[sid]
 
     await sio.emit("users", {"count": client_counter})
 
