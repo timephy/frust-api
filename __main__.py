@@ -33,10 +33,10 @@ async def history(request):
 
 async def list_current_users(request):
     return utils.dumps({
-        "user_count": client_counter,
-        "identified_users": [{
+        "userCount": client_counter,
+        "identifiedUsers": [{
             "name": client_names.get(sid, None),
-            "session_clicks": client_session_clicks.get(sid, 0)
+            "sessionClicks": client_session_clicks.get(sid, 0)
         } for sid in client_ids]
     })
 
