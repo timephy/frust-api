@@ -129,7 +129,16 @@ if "--dev" in sys.argv:
     # Redirect / to /index.html
     app.router.add_get("/", lambda _: web.HTTPFound('/index.html'))
     # Server static content
+
+    app.add_routes([
+        web.get("/version", lambda _: utils.dumps({
+            "commit_sha": "dev",
+            "timestamp": "timestamp"
+        }))
+    ])
+
     app.router.add_static("/", "./frontend")
+
 
 # Run app
 asyncio.run(web.run_app(app, port=80))
