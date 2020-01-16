@@ -23,15 +23,15 @@ client_session_clicks = {}
 
 
 # HTTP Routes
-async def index(request):
+def index(request):
     return utils.dumps({"version": VERSION})
 
 
-async def history(request):
-    return utils.dumps(await db.get_last_clicks())
+def stats(request):
+    return utils.dumps(db.get_latest_clicks())
 
 
-async def list_current_users(request):
+def list_current_users(request):
     return utils.dumps({
         "userCount": client_counter,
         "identifiedUsers": [{
@@ -55,8 +55,8 @@ async def click(sid, data):
     global client_names
     client_names[sid] = name
 
-    click = await db.add_click(name, comment, style)
-    await sio.emit("click", click)
+    click = db.add_click(name, comment, style)
+    sio.emit("click", click)
 
 
 @sio.event
@@ -85,7 +85,7 @@ async def connect(sid, environ):
     global client_counter
     client_counter += 1
 
-    await sio.emit("stats", await db.get_stats(), room=sid)
+    await sio.emit("stats", db.get_stats(), room=sid)
     await sio.emit("users", {"count": client_counter})
 
 
@@ -115,7 +115,7 @@ async def connect_error():
 # set routes of app
 app.add_routes([
     web.get("/api", index),
-    web.get("/api/history", history),
+    web.get("/api/stats", stats),
     web.get("/api/list", list_current_users)
 ])
 
