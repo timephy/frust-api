@@ -61,7 +61,7 @@ async def user_auth(sid, *, name):
         users[sid]["name"] = name
         # send message to users
         if name is not None and old_name is None:  # join
-            text = f"{name} hat betreten."
+            text = f"{name} ist beigetreten."
         elif name is None and old_name is not None:  # leave
             text = f"{old_name} hat verlassen."
         else:  # rename
