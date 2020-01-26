@@ -1,5 +1,9 @@
 # frustrated-physicists-backend
 
+A website for fellow Physics students at TUM to show their frustration.
+
+_This project is just for fun._
+
 ## General
 
 - python3.8
@@ -30,39 +34,137 @@ python3.8 . --dev
 
 ## API
 
-### Routes
+### Data Types
 
-`/api` (returns: `{"version": String}`)
+```typescript
+interface Stats {
+    click_count_total: number; // int
+    click_count_today: number; // int
+}
 
-`/api/history` click history (returns `[{"time": Int, "name": String, "comment": String?}]`)
+interface Status {
+    user_count: number; // int
+}
 
-`/api/socket.io` socket.io endpoint
+interface Click {
+    user: string;
+    comment: string?;
+    style: string?; // css classes
+    timestamp: number; // int
+}
+
+interface Event {
+    user: string;
+    name: string; // id of the event
+    timestamp: number; // int
+}
+
+interface Hour {
+    timestamp: number; // int
+    click_count: number; // int
+    event_count: number; // int
+}
+
+interface User {
+    name: string;
+    click_count: number; // int
+    event_count: number; // int
+}
+
+interface Message {
+    text: string;
+    style: string?;
+    type: "toast" | "popup";
+}
+```
+
+Optionals may be `null` or `undefined`.
+
+### HTTP Routes
+
+##### `/api` -> `{"version": string}`
+
+A description of the backend server.
+
+##### `/api/latest_clicks` -> `[Click]`
+
+Clicks of today.
+
+##### `/api/latest_events` -> `[Events]`
+
+Events of today.
+
+##### `/api/latest_hours` -> `[Hour]`
+
+Hours of last 7 days.
+
+##### `/api/users` -> `[User]`
+
+All users with their overall stats.
+
+##### `/api/online_users` -> `[User]`
+
+Online users with their session stats.
+
+##### `/api/socket.io`
+
+The socket.io endpoint.
+
+Connection example (JS):
+
+```typescript
+const socket = io({
+  path: "/api/socket.io"
+});
+
+socket.connect();
+```
 
 ### Socket.io Events
 
-"users" (emitted every time usercount changes)
+#### Server to Client
 
-```typescript
-{
-    "count": Int
-}
-```
+##### `click`(`Click`)
 
-"stats" (emitted once when you connect, and periodically after)
+Sent every time a click occurs.
 
-```typescript
-{
-    "total": Int,
-    "day": Int
-}
-```
+##### `event`(`Event`)
 
-"click" (emitted ever time a corresponding click is received by the server)
+Sent every time an event occurs.
 
-```typescript
-{
-    "time": Int,
-    "name": String,
-    "comment": String?
-}
-```
+##### `stats`(`Stats`)
+
+Sent on connection and when user_count changes.
+Clients should keep count of incoming clicks.
+
+##### `status`(`Status`)
+
+Sent when a client connects/disconnects or the server state changes.
+
+##### `message`(`Message`)
+
+Sent for example when a user joins or leaves.
+
+#### Client to Server
+
+##### `click`(`Click` without `timestamp`, `id`)
+
+Sent on click performed.
+
+##### `event`(`Event` without `timestamp`)
+
+Sent on event performed.
+
+##### `auth`(`string`)
+
+Sent on connect (if username was saved) to authenticate (let server know the name to show "user joined" message).
+
+## Continuous delivery
+
+- `master` to frustrierte-physiker.timephy.com and staging-fp.timephy.com
+
+## Frontend
+
+Also see the frontent implementation:
+
+<https://github.com/timephy/frustrated-physicists-frontend>

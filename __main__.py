@@ -1,144 +1,162 @@
 import asyncio
-from aiohttp import web
-import socketio
 import sys
+import logging
+import datetime
 
-import db
+from aiohttp import web
+
+from server import app, sio
+import data
 import utils
 
-VERSION = "0.1"
 
-# Setup web server
-sio = socketio.AsyncServer(async_mode="aiohttp")
-
-app = web.Application()
-sio.attach(app, socketio_path="/api/socket.io")
+VERSION = "1.0"
 
 
-# A counter for the connected socket.io client
-client_counter = 0
-client_ids = []
-client_names = {}
-client_session_clicks = {}
+# HTTP ROUTES
+
+routes = web.RouteTableDef()
 
 
-# HTTP Routes
+@routes.get("/api")
+@utils.return_to_json
 def index(request):
-    return utils.dumps({"version": VERSION})
+    return {"version": VERSION}
 
 
-def stats(request):
-    return utils.dumps(db.get_latest_clicks())
+@routes.get("/api/latest_clicks")
+@utils.return_to_json
+def latest_clicks(request):
+    return data.get_clicks(since=utils.time_day())
 
 
-def list_current_users(request):
-    return utils.dumps({
-        "userCount": client_counter,
-        "identifiedUsers": [{
-            "name": client_names.get(sid, None),
-            "sessionClicks": client_session_clicks.get(sid, 0)
-        } for sid in client_ids]
-    })
+@routes.get("/api/latest_events")
+@utils.return_to_json
+def latest_events(request):
+    return data.get_events(since=utils.time_day())
 
 
-# Socket.io Events
+@routes.get("/api/latest_hours")
+@utils.return_to_json
+def latest_hours(request):
+    week_ago = utils.time_day() - utils.SECS_PER_DAY * 6
+    return data.get_hours(since=week_ago)
+
+
+@routes.get("/api/users")
+@utils.return_to_json
+def users(request):
+    return data.get_users()
+
+
+@routes.get("/api/online_users")
+@utils.return_to_json
+def online_users(request):
+    return data.get_online_users()
+
+
+@routes.get("/api/current_stats")
+@utils.return_to_json
+def current_stats(request):
+    return data.get_stats()
+
+
+# SOCKET.IO EVENTS
+
 @sio.event
 @utils.sio_catch_error
-async def click(sid, data):
-    print(f"click({sid}, {data})")
+async def click(sid, sent_data):
+    print(f"click({sid}, {sent_data})")
 
-    global client_session_clicks
-    client_session_clicks[sid] += 1
-
-    name, comment, style = utils.extract_click_data(data)
-
-    global client_names
-    client_names[sid] = name
-
-    click = db.add_click(name, comment, style)
-    sio.emit("click", click)
+    user, comment, style = utils.extract_click_data(sent_data)
+    await data.user_click(sid, user=user, comment=comment, style=style)
 
 
 @sio.event
 @utils.sio_catch_error
-async def event(sid, data):
-    print(f"event({sid}, {data})")
+async def event(sid, sent_data):
+    print(f"event({sid}, {sent_data})")
 
-    name, event_id = utils.extract_event_data(data)
+    user, name = utils.extract_event_data(sent_data)
+    await data.user_event(sid, user=user, name=name)
 
-    global client_names
-    client_names[sid] = name
 
-    await sio.emit("event", {"name": name, "id": event_id})
+@sio.event
+async def auth(sid, sent_data):
+    print(f"auth({sid}, {sent_data})")
+
+    name = utils.extract_name(sent_data)
+    await data.user_auth(sid, name=name)
 
 
 @sio.event
 async def connect(sid, environ):
     print(f"connect({sid})")  # ", {environ})")
-
-    global client_ids
-    client_ids.append(sid)
-
-    global client_session_clicks
-    client_session_clicks[sid] = 0
-
-    global client_counter
-    client_counter += 1
-
-    await sio.emit("stats", db.get_stats(), room=sid)
-    await sio.emit("users", {"count": client_counter})
+    await data.user_connect(sid)
 
 
 @sio.event
 async def disconnect(sid):
     print(f"disconnect({sid})")
-    global client_ids
-    client_ids.remove(sid)
-
-    global client_counter
-    client_counter -= 1
-
-    global client_session_clicks
-    del client_session_clicks[sid]
-
-    global client_names
-    if sid in client_names:  # if user did send name
-        del client_names[sid]
-
-    await sio.emit("users", {"count": client_counter})
+    await data.user_disconnect(sid)
 
 
 @sio.event
 async def connect_error():
-    print("The connection failed!")
+    print("A Socket.io connection failed!")
+
+
+# TASKS
+
+async def hourly_task():
+    while True:
+        # sleep until next hour
+        current_time = utils.time()
+        current_secs = current_time % utils.SECS_PER_HOUR
+        remaining_secs = utils.SECS_PER_HOUR - current_secs
+        logging.debug(
+            f"[{datetime.datetime.now()}] hourly_task sleeping for "
+            f"{remaining_secs} seconds")
+        await asyncio.sleep(remaining_secs)
+
+        # do stuff
+        data.next_hour()
+
+
+# SETUP TASKS
+
+async def start_background_tasks(app):
+    app["hourly_task"] = asyncio.create_task(hourly_task(), name="hourly_task")
+
+
+async def cleanup_background_tasks(app):
+    app["hourly_task"].cancel()
+    await app["hourly_task"]
+
+app.on_startup.append(start_background_tasks)
+app.on_cleanup.append(cleanup_background_tasks)
+
+
+# RUN APP
 
 # set routes of app
-app.add_routes([
-    web.get("/api", index),
-    web.get("/api/stats", stats),
-    web.get("/api/list", list_current_users)
-])
+app.router.add_routes(routes)
 
-# serve frontend for development
-# use /index.html (/ does not work)
+# dev mode
 if "--dev" in sys.argv:
-    print("Developer mode activated (serving static content).")
-    # Logging
-    import logging
     logging.basicConfig(level=logging.DEBUG)
-    # Redirect / to /index.html
-    app.router.add_get("/", lambda _: web.HTTPFound('/index.html'))
-    # Server static content
+    logging.info("Developer mode (serving static content)")
 
+    # Redirect / to /index.html (/ does not work)
+    app.router.add_get("/", lambda _: web.HTTPFound('/index.html'))
+
+    # Serve static content (order is important: files always last)
     app.add_routes([
         web.get("/version", lambda _: utils.dumps({
             "commit_sha": "dev",
-            "timestamp": "timestamp"
+            "timestamp": utils.time_day()
         }))
     ])
-
     app.router.add_static("/", "./frontend")
 
-
-# Run app
-asyncio.run(web.run_app(app, port=80))
+web.run_app(app, port=80)
