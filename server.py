@@ -10,7 +10,7 @@ sio = socketio.AsyncServer(async_mode="aiohttp")
 sio.attach(app, socketio_path="/api/socket.io")
 
 
-async def emit_message(text, *, style="small dotted", type="toast"):
+async def emit_message(text, *, style="small highlight", type="toast"):
     await sio.emit("message", {
         "text": text,
         "style": style,
