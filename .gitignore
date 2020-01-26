@@ -1,5 +1,6 @@
 # Frontend for development
 /frontend
+/.old
 *.sqlite
 
 # Byte-compiled / optimized / DLL files
