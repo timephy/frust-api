@@ -34,6 +34,7 @@ docker run -dit --name frustrated-physicists-backend \
 ```
 
 Either use `--network` with a reverse proxy or `-p`.
+Run `touch /path/to/db.sqlite` before running the container (otherwise the created path will be a directory).
 
 ### Development
 
