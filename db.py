@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from db_model import Base, Click, User, Hour, Event  # Stats
 import utils
 
-engine = create_engine("sqlite:///db2.sqlite")
+engine = create_engine("sqlite:///db.sqlite")
 Base.metadata.create_all(engine)
 connection = engine.connect()
 
