@@ -22,6 +22,19 @@ cd frustrated-physicists-backend
 python3.8 .
 ```
 
+Or run via docker:
+
+```bash
+docker pull docker.pkg.github.com/timephy/frustrated-physicists-backend/frustrated-physicists-backend:master
+docker run -dit --name frustrated-physicists-backend \
+    -v /path/to/data.sqlite:/usr/src/app/data.sqlite \
+    --network reverse-proxy-network \
+    -p 80:80 \
+    docker.pkg.github.com/timephy/frustrated-physicists-backend/frustrated-physicists-backend:master
+```
+
+Either use `--network` with a reverse proxy or `-p`.
+
 ### Development
 
 ```bash
