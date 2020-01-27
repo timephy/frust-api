@@ -27,7 +27,7 @@ Or run via docker:
 ```bash
 docker pull docker.pkg.github.com/timephy/frustrated-physicists-backend/frustrated-physicists-backend:master
 docker run -dit --name frustrated-physicists-backend \
-    -v /path/to/data.sqlite:/usr/src/app/db.sqlite \
+    -v /path/to/db.sqlite:/usr/src/app/db.sqlite \
     --network reverse-proxy-network \
     -p 80:80 \
     docker.pkg.github.com/timephy/frustrated-physicists-backend/frustrated-physicists-backend:master
