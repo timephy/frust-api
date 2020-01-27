@@ -91,6 +91,10 @@ def add_click(session, *, user, comment, style):
     click = Click(user=user, comment=comment,
                   style=style, timestamp=utils.time())
     session.add(click)
+
+    user = _user(session, user)
+    user.clicks += 1
+
     return click.to_json()
 
 
@@ -98,19 +102,23 @@ def add_click(session, *, user, comment, style):
 def add_event(session, *, user, name):
     event = Event(user=user, name=name, timestamp=utils.time())
     session.add(event)
+
+    user = _user(session, user)
+    user.events += 1
+
     return event.to_json()
 
 
-@transactional
-def inc_user_clicks(session, *, user_name):
-    user = _user(session, user_name)
-    user.clicks += 1
+# @transactional
+# def inc_user_clicks(session, *, user_name):
+#     user = _user(session, user_name)
+#     user.clicks += 1
 
 
-@transactional
-def inc_user_events(session, *, user_name):
-    user = _user(session, user_name)
-    user.events += 1
+# @transactional
+# def inc_user_events(session, *, user_name):
+#     user = _user(session, user_name)
+#     user.events += 1
 
 
 #
