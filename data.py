@@ -117,7 +117,7 @@ async def user_event(sid, *, user, name):
 get_clicks = db.get_clicks
 get_events = db.get_events
 get_hours = db.get_hours
-get_user = db.get_users
+get_users = db.get_users
 
 
 def get_online_users():
