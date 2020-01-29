@@ -16,17 +16,20 @@ import sio_events
 
 async def hourly_task():
     while True:
-        # sleep until next hour
         current_time = utils.time()
-        current_secs = current_time % utils.SECS_PER_HOUR
-        remaining_secs = utils.SECS_PER_HOUR - current_secs
+        current_hour = utils.time_hour(current_time=current_time)
+        next_hour = current_hour + utils.SECS_PER_HOUR
+
+        await data.start_hour(timestamp=current_hour)
+
+        # sleep until next hour
+        remaining_secs = next_hour - current_time
         logging.debug(
             f"[{datetime.datetime.now()}] hourly_task sleeping for "
             f"{remaining_secs} seconds")
         await asyncio.sleep(remaining_secs)
 
-        # do stuff
-        data.next_hour()
+        await data.end_hour(timestamp=current_hour)
 
 
 # SETUP TASKS
@@ -36,6 +39,7 @@ async def start_background_tasks(app):
 
 
 async def cleanup_background_tasks(app):
+    await data.end_hour(timestamp=utils.time_hour())
     app["hourly_task"].cancel()
     await app["hourly_task"]
 
