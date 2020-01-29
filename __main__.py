@@ -67,6 +67,10 @@ if "--dev" in sys.argv:
             "timestamp": utils.time_day()
         }))
     ])
+    app.router.add_get("/version.json", lambda _: utils.dumps({
+        "commit_sha": f"{utils.time()}",
+        "timestamp": f"{utils.time()}"
+    }))
     app.router.add_static("/", "./frontend")
 
 web.run_app(app, port=80)
