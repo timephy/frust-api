@@ -57,7 +57,9 @@ Event.to_json = lambda event: {
 Hour.to_json = lambda hour: {
     "timestamp": hour.timestamp,
     "click_count": hour.clicks,
-    "event_count": hour.events
+    "event_count": hour.events,
+    "click_count_total": hour.clicks_total,
+    "event_count_total": hour.events_total
 }
 
 User.to_json = lambda user: {
@@ -71,17 +73,18 @@ def _user(session, name):
     obj = session.query(User).get(name)
     if obj is None:
         obj = User(name=name, clicks=0, events=0)
-    session.add(obj)
+        session.add(obj)
     return obj
 
 
-def _hour(session, timestamp):
-    obj = session.query(Hour).get(timestamp)
-    if obj is None:
-        obj = Hour(timestamp=timestamp,
-                   clicks=0, events=0)
-    session.add(obj)
-    return obj
+# def _hour(session, timestamp):
+#     obj = session.query(Hour).get(timestamp)
+#     if obj is None:
+#         obj = Hour(timestamp=timestamp,
+#                    clicks=0, events=0,
+#                    clicks_total=0, events_total=0)
+#         session.add(obj)
+#     return obj
 
 
 #
@@ -147,3 +150,36 @@ def get_hours(session, *, since):
 @transactional
 def get_users(session):
     return [user.to_json() for user in session.query(User).all()]
+
+
+@transactional
+def get_hour(session, timestamp):
+    hour = session.query(Hour).order_by(Hour.timestamp.desc()).first()
+    if hour is None:
+        return {
+            "timestamp": utils.time_hour(),
+            "click_count": 0,
+            "event_count": 0,
+            "click_count_total": 0,
+            "event_count_total": 0
+        }
+    obj = hour.to_json()
+    if hour.timestamp == timestamp:
+        session.delete(hour)
+    else:
+        obj["click_count"] = 0
+        obj["event_count"] = 0
+    return obj
+
+
+@transactional
+def set_hour(session, timestamp, *,
+             clicks, events, clicks_total, events_total):
+    hour = session.query(Hour).get(timestamp)
+    if hour is None:
+        hour = Hour(timestamp=timestamp)
+        session.add(hour)
+    hour.clicks = clicks
+    hour.events = events
+    hour.clicks_total = clicks_total
+    hour.events_total = events_total
