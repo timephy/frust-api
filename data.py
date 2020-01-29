@@ -1,5 +1,8 @@
+from functools import reduce
+
 import db
 from server import sio, emit_message
+import utils
 
 
 # CONSTANTS
@@ -13,15 +16,15 @@ user_count = 0
 users = {}
 
 click_count_total = 0
-click_count_today = 0
-click_count_hour = 0
-
 event_count_total = 0
-event_count_today = 0
+click_count_hour = 0
 event_count_hour = 0
 
+click_count_today = 0
+event_count_today = 0
 
 # USER EVENTS
+
 
 async def user_connect(sid):
     # cache
@@ -116,8 +119,20 @@ async def user_event(sid, *, user, name):
 
 get_clicks = db.get_clicks
 get_events = db.get_events
-get_hours = db.get_hours
 get_users = db.get_users
+
+
+def get_hours(since):
+    list = db.get_hours(since=since)
+    if utils.time() >= since:
+        list.append({
+            "timestamp": utils.time_hour(),
+            "click_count": click_count_hour,
+            "event_count": event_count_hour,
+            "click_count_total": click_count_total,
+            "event_count_total": event_count_total
+        })
+    return list
 
 
 def get_online_users():
@@ -127,7 +142,11 @@ def get_online_users():
 def get_stats():
     return {
         "click_count_total": click_count_total,
-        "click_count_today": click_count_today
+        "click_count_today": click_count_today,
+        "click_count_hour": click_count_hour,
+        "event_count_total": event_count_total,
+        "event_count_today": event_count_today,
+        "event_count_hour": event_count_hour
     }
 
 
@@ -139,12 +158,33 @@ def get_status():
 
 # TASKS
 
-def next_hour(session):
-    pass
+async def start_hour(timestamp):
+    global click_count_total, click_count_hour, click_count_today
+    global event_count_total, event_count_hour, event_count_today
+
+    # today
+    hours = db.get_hours(since=utils.time_day())
+    click_count_today = reduce(lambda val, hour: val + hour["click_count"],
+                               hours, 0)
+    event_count_today = reduce(lambda val, hour: val + hour["event_count"],
+                               hours, 0)
+
+    # total, hour
+    hour = db.get_hour(timestamp)
+    click_count_hour = hour["click_count"]
+    event_count_hour = hour["event_count"]
+    click_count_total = hour["click_count_total"]
+    event_count_total = hour["event_count_total"]
+
+    await sio.emit("stats", get_stats())
 
 
-def next_day(session):
-    pass
+async def end_hour(timestamp):
+    db.set_hour(timestamp=timestamp,
+                clicks=click_count_hour,
+                events=event_count_hour,
+                clicks_total=click_count_total,
+                events_total=event_count_total)
 
 
 # INIT
