@@ -47,18 +47,25 @@ class Hour(Base):
     timestamp = Column(Integer, primary_key=True)
     clicks = Column(Integer)
     events = Column(Integer)
+    clicks_total = Column(Integer)
+    events_total = Column(Integer)
 
     def __repr__(self):
         # return f"Hour(timestamp='{self.timestamp}', clicks_total={self.clicks_total}, clicks={self.clicks}, events_total={self.events_total}, events={self.events})"
-        return f"Hour(timestamp='{self.timestamp}', clicks={self.clicks}, events={self.events})"
+        return ("Hour("
+                f"clicks={self.clicks}, "
+                f"events={self.events}, "
+                f"clicks_total={self.clicks_total}, "
+                f"events_total={self.events_total}"
+                ")")
 
 
-class Total(Base):
-    __tablename__ = "total"
+# class Total(Base):
+#     __tablename__ = "total"
 
-    timestamp = Column(Integer, primary_key=True)
-    clicks = Column(Integer)
-    events = Column(Integer)
+#     timestamp = Column(Integer, primary_key=True)
+#     clicks = Column(Integer)
+#     events = Column(Integer)
 
 # class Stats(Base):
 #     __tablename__ = "stats"
