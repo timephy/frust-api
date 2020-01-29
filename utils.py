@@ -94,13 +94,15 @@ def time():
     return int(_time.time())
 
 
-def time_hour():
+def time_hour(current_time=None):
     """The time the current hour began."""
-    current_time = time()
+    if current_time is None:
+        current_time = time()
     return current_time - current_time % SECS_PER_HOUR
 
 
-def time_day():
+def time_day(current_time=None):
     """The time the current day began."""
-    current_time = time()
+    if current_time is None:
+        current_time = time()
     return current_time - current_time % SECS_PER_DAY
