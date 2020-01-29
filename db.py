@@ -165,7 +165,7 @@ def get_hour(session, timestamp):
         }
     obj = hour.to_json()
     if hour.timestamp == timestamp:
-        session.delete(hour)
+        session.delete(hour)  # because this hour is kept in cache
     else:
         obj["click_count"] = 0
         obj["event_count"] = 0
