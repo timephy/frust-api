@@ -53,7 +53,11 @@ python3.8 . --dev
 ```typescript
 interface Stats {
     click_count_total: number; // int
+    event_count_total: number; // int
     click_count_today: number; // int
+    event_count_today: number; // int
+    click_count_hour: number; // int
+    event_count_hour: number; // int
 }
 
 interface Status {
@@ -77,6 +81,8 @@ interface Hour {
     timestamp: number; // int
     click_count: number; // int
     event_count: number; // int
+    click_count_total: number; // int
+    event_count_today: number; // int
 }
 
 interface User {
@@ -110,7 +116,7 @@ Events of today.
 
 ##### `/api/latest_hours` -> `[Hour]`
 
-Hours of last 7 days.
+Hours of today and last 6 days.
 
 ##### `/api/users` -> `[User]`
 
@@ -119,6 +125,10 @@ All users with their overall stats.
 ##### `/api/online_users` -> `[User]`
 
 Online users with their session stats.
+
+##### `/api/current_stats` -> `Stats`
+
+The current stats.
 
 ##### `/api/socket.io`
 
