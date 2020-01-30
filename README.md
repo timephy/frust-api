@@ -120,11 +120,11 @@ A description of the backend server.
 
 ##### `/api/latest_clicks` -> `[Click]`
 
-Clicks of today. [Reversed order]
+Clicks of today. [reversed order, limited to 10k elements]
 
 ##### `/api/latest_events` -> `[Events]`
 
-Events of today. [Reversed order]
+Events of today. [reversed order, limited to 10k elements]
 
 ##### `/api/latest_hours` -> `[Hour]`
 
