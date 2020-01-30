@@ -1,16 +1,26 @@
 # frustrated-physicists-backend
 
-A website for fellow Physics students at TUM to show their frustration.
+A website for fellow Physics students at [TUM](https://www.tum.de) to share their frustration and motivate another.
 
 _This project is just for fun._
 
-## General
+## To our fellow students
 
-- python3.8
+To keep this fun project going we count on you to create Issues or Pull Requests with your suggestions.
 
-- serves on port 80
+_Happy frustrated studying!_
 
-- this backend only acts as the API (serves frontend only for development)
+## Architecture
+
+- [Frontend](https://github.com/timephy/frustrated-physicists-frontend) is statically served by [nginx](https://www.nginx.com)
+- Backend (python3.8) server is reverse proxied by [nginx](https://www.nginx.com) (`/api` paths)
+
+### Libraries used
+
+- [asyncio](https://docs.python.org/3/library/asyncio.html) as the asynchronous framework (event loop library)
+- [aiohttp](https://github.com/aio-libs/aiohttp) as the webserver for http requests
+- [socket.io](https://socket.io) is used for websocket/live communication
+- [sqlite](https://www.sqlite.org/index.html) is the database, accessed using [sqlalchemy](https://www.sqlalchemy.org) as the ORM
 
 ## How to run
 
@@ -37,6 +47,8 @@ Either use `--network` with a reverse proxy or `-p`.
 Run `touch /path/to/db.sqlite` before running the container (otherwise the created path will be a directory).
 
 ### Development
+
+In development mode the backend serves the frontend.
 
 ```bash
 git clone https://github.com/timephy/frustrated-physicists-backend
