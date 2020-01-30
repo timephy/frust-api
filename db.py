@@ -129,21 +129,22 @@ def add_event(session, *, user, name):
 @transactional
 def get_clicks(session, *, since):
     return [click.to_json() for click in session.query(Click)
-            # .order_by(Click.id.desc())
-            .filter(Click.timestamp >= since)]
+            .filter(Click.timestamp >= since)
+            .order_by(Click.id.desc())
+            .limit(10000)]
 
 
 @transactional
 def get_events(session, *, since):
     return [event.to_json() for event in session.query(Event)
-            # .order_by(Event.id.desc())
-            .filter(Event.timestamp >= since)]
+            .order_by(Event.id.desc())
+            .filter(Event.timestamp >= since)
+            .limit(10000)]
 
 
 @transactional
 def get_hours(session, *, since):
     return [hour.to_json() for hour in session.query(Hour)
-            # .order_by(Hour.timestamp.desc())
             .filter(Hour.timestamp >= since)]
 
 
