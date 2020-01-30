@@ -84,7 +84,8 @@ async def user_click(sid, *, user, comment, style):
     users[sid]["click_count_session"] += 1
 
     # click
-    click = db.add_click(user=user, comment=comment, style=style)
+    click = db.add_click(user=user, comment=comment,
+                         style=style, timestamp=utils.time())
 
     # user
 
@@ -107,7 +108,7 @@ async def user_event(sid, *, user, name):
     users[sid]["event_count_session"] += 1
 
     # event
-    event = db.add_event(user=user, name=name)
+    event = db.add_event(user=user, name=name, timestamp=utils.time())
 
     # user
 

@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
 from db_model import Base, Click, User, Hour, Event  # Stats
-import utils
+
 
 engine = create_engine("sqlite:///db.sqlite")
 Base.metadata.create_all(engine)
@@ -90,9 +90,9 @@ def _user(session, name):
 #
 
 @transactional
-def add_click(session, *, user, comment, style):
+def add_click(session, *, user, comment, style, timestamp):
     click = Click(user=user, comment=comment,
-                  style=style, timestamp=utils.time())
+                  style=style, timestamp=timestamp)
     session.add(click)
 
     user = _user(session, user)
@@ -102,8 +102,8 @@ def add_click(session, *, user, comment, style):
 
 
 @transactional
-def add_event(session, *, user, name):
-    event = Event(user=user, name=name, timestamp=utils.time())
+def add_event(session, *, user, name, timestamp):
+    event = Event(user=user, name=name, timestamp=timestamp)
     session.add(event)
 
     user = _user(session, user)
@@ -158,7 +158,7 @@ def get_hour(session, timestamp):
     hour = session.query(Hour).order_by(Hour.timestamp.desc()).first()
     if hour is None:
         return {
-            "timestamp": utils.time_hour(),
+            "timestamp": timestamp,
             "click_count": 0,
             "event_count": 0,
             "click_count_total": 0,
