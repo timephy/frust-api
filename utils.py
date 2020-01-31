@@ -1,4 +1,4 @@
-import json
+import ujson
 import functools
 import time as _time
 
@@ -66,7 +66,7 @@ def extract_event_data(data):
 
 def dumps(data):
     """json.dumps with indent of 2."""
-    return web.Response(text=json.dumps(data, indent=2))
+    return web.Response(text=ujson.dumps(data, indent=2))
 
 
 def return_to_json(func):
