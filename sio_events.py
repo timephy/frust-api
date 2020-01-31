@@ -6,7 +6,7 @@ import utils
 @sio.event
 @utils.sio_catch_error
 async def click(sid, sent_data):
-    print(f"click({sid}, {sent_data})")
+    # print(f"click({sid}, {sent_data})")
 
     user, comment, style = utils.extract_click_data(sent_data)
     await data.user_click(sid, user=user, comment=comment, style=style)
