@@ -81,17 +81,16 @@ async def user_click(sid, *, user, comment, style):
     click_count_today += 1
     click_count_hour += 1
 
+    # user
     users[sid]["click_count_session"] += 1
 
     # click
     click = db.add_click(user=user, comment=comment,
                          style=style, timestamp=utils.time())
 
-    # user
-
     click_count_session = users[sid]["click_count_session"]
-    if click_count_session != 0 and (click_count_session % 100 == 0
-                                     or click_count_session == 50):
+    if click_count_session != 0 and (click_count_session % 100 == 0 or
+                                     click_count_session == 50):
         await emit_message(f"{user} erreicht {click_count_session} Klicks!")
     await sio.emit("click", click)
 
@@ -105,15 +104,20 @@ async def user_event(sid, *, user, name):
     event_count_today += 1
     event_count_hour += 1
 
+    # user
     users[sid]["event_count_session"] += 1
 
     # event
-    event = db.add_event(user=user, name=name, timestamp=utils.time())
-
-    # user
-
-    await emit_message(f"{user} triggered {name}!")
-    await sio.emit("event", event)
+    if name not in ["rickroll", "zudummfürtum"]:
+        event = db.add_event(user=user, name=name, timestamp=utils.time())
+        await emit_message(f"{user} triggered {name}!")
+        await sio.emit("event", event)
+    else:
+        await sio.emit("event", {
+            "user": user,
+            "name": name,
+            "timestamp": utils.time()
+        })
 
 
 # REQUESTS
