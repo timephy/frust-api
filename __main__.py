@@ -4,12 +4,16 @@ import logging
 import datetime
 
 from aiohttp import web
+import uvloop
 
 from server import app
 import data
 import utils
 from http_routes import routes
 import sio_events
+
+
+uvloop.install()
 
 
 # TASKS
