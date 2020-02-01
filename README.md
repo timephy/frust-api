@@ -12,7 +12,7 @@ _Happy frustrated studying!_
 
 ## Architecture
 
-- [Frontend](https://github.com/timephy/frust-web) is statically served by [nginx](https://www.nginx.com)
+- [Frontend](https://github.com/timephy/frust-web) is served statically by [nginx](https://www.nginx.com)
 - Backend (python3.8) server is reverse proxied by [nginx](https://www.nginx.com) (`/api` paths)
 
 ### Libraries used
