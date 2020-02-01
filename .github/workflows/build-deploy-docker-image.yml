@@ -34,11 +34,11 @@ jobs:
           # rsync error if id_rsa is readable by other users
           chmod 700 ~/.ssh/id_rsa
           ssh-keyscan $SERVER > ~/.ssh/known_hosts
-          ssh cd@$SERVER ./redeploy_frustrated-physicists-backend.sh
+          ssh cd@$SERVER ./redeploy_frust-api.sh
         env:
           SERVER: timephy.com
 
     env:
       DOCKER_REGISTRY: docker.pkg.github.com
-      IMAGE_NAME: frustrated-physicists-backend
+      IMAGE_NAME: frust-api
       # IMAGE_TAG: ${{ substring(github.ref, 11) }}

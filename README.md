@@ -1,4 +1,4 @@
-# frustrated-physicists-backend
+# frust-api
 
 A website for fellow Physics students at [TUM](https://www.tum.de) to share their frustration and motivate another.
 
@@ -12,7 +12,7 @@ _Happy frustrated studying!_
 
 ## Architecture
 
-- [Frontend](https://github.com/timephy/frustrated-physicists-frontend) is statically served by [nginx](https://www.nginx.com)
+- [Frontend](https://github.com/timephy/frust-web) is statically served by [nginx](https://www.nginx.com)
 - Backend (python3.8) server is reverse proxied by [nginx](https://www.nginx.com) (`/api` paths)
 
 ### Libraries used
@@ -27,7 +27,7 @@ _Happy frustrated studying!_
 ### Production
 
 ```bash
-git clone https://github.com/timephy/frustrated-physicists-backend
+git clone https://github.com/timephy/frust-api
 cd frustrated-physicists-backend
 python3.8 .
 ```
@@ -35,12 +35,12 @@ python3.8 .
 Or run via docker:
 
 ```bash
-docker pull docker.pkg.github.com/timephy/frustrated-physicists-backend/frustrated-physicists-backend:master
-docker run -dit --name frustrated-physicists-backend \
+docker pull docker.pkg.github.com/timephy/frust-api/frust-api:master
+docker run -dit --name frust-api \
     -v /path/to/db.sqlite:/usr/src/app/db.sqlite \
     --network reverse-proxy-network \
     -p 80:80 \
-    docker.pkg.github.com/timephy/frustrated-physicists-backend/frustrated-physicists-backend:master
+    docker.pkg.github.com/timephy/frust-api/frust-api:master
 ```
 
 Either use `--network` with a reverse proxy or `-p`.
@@ -51,10 +51,10 @@ Run `touch /path/to/db.sqlite` before running the container (otherwise the creat
 In development mode the backend serves the frontend.
 
 ```bash
-git clone https://github.com/timephy/frustrated-physicists-backend
-git clone https://github.com/timephy/frustrated-physicists-frontend
-cd frustrated-physicists-backend
-ln -s ../frustrated-physicists-frontend frontend
+git clone https://github.com/timephy/frust-api
+git clone https://github.com/timephy/frust-web
+cd frust-api
+ln -s ../frust-web frontend
 python3.8 . --dev
 ```
 
@@ -197,10 +197,10 @@ Sent on connect (if username was saved) to authenticate (let server know the nam
 
 ## Continuous delivery
 
-- `master` to frustrierte-physiker.timephy.com and staging-fp.timephy.com
+- `master` to frust.app and staging.frust.app
 
 ## Frontend
 
 Also see the frontent implementation:
 
-<https://github.com/timephy/frustrated-physicists-frontend>
+<https://github.com/timephy/frust-web>
