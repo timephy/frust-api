@@ -108,7 +108,7 @@ async def user_event(sid, *, user, name):
     users[sid]["event_count_session"] += 1
 
     # event
-    if name not in ["rickroll", "zudummfürtum"]:
+    if name not in ["rickroll", "exmatrikulieren"]:
         event = db.add_event(user=user, name=name, timestamp=utils.time())
         await emit_message(f"{user} triggered {name}!")
         await sio.emit("event", event)
